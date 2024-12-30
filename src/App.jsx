@@ -109,16 +109,45 @@ function App() {
         return updatedMessages;
       });
 
+      // Check WebSocket state and attempt reconnection if necessary
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(messageData)); // Send JSON message to WebSocket server
       } else {
-        console.error("WebSocket is not connected");
+        console.error("WebSocket is not connected. Attempting to reconnect...");
+        reconnectWebSocket(() => {
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(messageData));
+          } else {
+            console.error("Failed to reconnect WebSocket");
+          }
+        });
       }
 
       setMessageInput(""); // Clear input field
     }
   };
 
+  // Add reconnection logic
+  const reconnectWebSocket = (onReconnect) => {
+    if (
+      !ws ||
+      ws.readyState === WebSocket.CLOSED ||
+      ws.readyState === WebSocket.CLOSING
+    ) {
+      console.log("Reconnecting WebSocket...");
+      initializeWebSocket();
+      const checkConnectionInterval = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          console.log("WebSocket reconnected");
+          clearInterval(checkConnectionInterval);
+          if (onReconnect) onReconnect();
+        }
+      }, 1000); // Check every 1 second
+    } else {
+      console.log("WebSocket is already reconnecting or connected");
+      if (onReconnect) onReconnect();
+    }
+  };
   // Handle Enter key for sending message
   const handleKeyPress = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
