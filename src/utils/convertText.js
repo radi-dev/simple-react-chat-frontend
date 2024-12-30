@@ -5,7 +5,7 @@ function escapeHtml(text) {
     .replace(/&/g, "&amp;");
 }
 
-function convertWhatsAppTextToHtml(text) {
+export function convertWhatsAppTextToHtml(text) {
   // Escape HTML special characters
   let formattedText = escapeHtml(text);
 
