@@ -3,40 +3,87 @@ import BotMessage from "./components/botMessage";
 import HumanMessage from "./components/humanMessage";
 
 function App() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    // Load messages from local storage on initial load
+    const savedMessages = localStorage.getItem("messages");
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
   const [messageInput, setMessageInput] = useState("");
   const [ws, setWs] = useState(null);
   const containerRef = useRef(null);
 
   const API_URL = import.meta.env.VITE_API_URL || "ws://localhost:8000";
   const SOCKET_URL = API_URL + "/ws";
-  // Initialize WebSocket connection when the component mounts
-  useEffect(() => {
-    const socket = new WebSocket(SOCKET_URL);
-    setWs(socket);
+  const reconnectDelay = 3000; // 3 seconds
 
-    socket.onmessage = (event) => {
-      // Handle incoming messages
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: event.data, isUser: false },
-      ]);
+  // Initialize WebSocket connection
+  const initializeWebSocket = () => {
+    const socket = new WebSocket(SOCKET_URL);
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established");
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-      // setWs(null);
+    socket.onmessage = (event) => {
+      try {
+        // Parse the incoming message
+        const data = JSON.parse(event.data);
+        console.log("data :>> ", data);
+        // Check for required fields in the JSON message
+        if (data && data.type && data.content) {
+          setMessages((prevMessages) => {
+            const updatedMessages = [
+              ...prevMessages,
+              { text: data.content, isUser: false },
+            ];
+            localStorage.setItem("messages", JSON.stringify(updatedMessages));
+            return updatedMessages;
+          });
+        } else {
+          console.warn("Unexpected message format:", data);
+        }
+      } catch (error) {
+        console.error("Failed to parse incoming WebSocket message:", error);
+      }
+    };
+
+    socket.onclose = (event) => {
+      console.warn("WebSocket connection closed", event.reason);
+      // Attempt to reconnect after a delay
+      setTimeout(() => initializeWebSocket(), reconnectDelay);
     };
 
     socket.onerror = (error) => {
       console.error("WebSocket error", error);
-      // setWs(null);
-    };
-
-    return () => {
+      // Close the socket and attempt reconnection
       socket.close();
     };
+
+    setWs(socket);
+  };
+
+  useEffect(() => {
+    initializeWebSocket();
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+    };
   }, []);
+
+  // useEffect(() => {
+  //   let pingInterval;
+  //   if (ws) {
+  //     pingInterval = setInterval(() => {
+  //       if (ws.readyState === WebSocket.OPEN) {
+  //         ws.send(JSON.stringify({ type: "ping" }));
+  //       }
+  //     }, 5000); // Send a ping every 5 seconds
+  //   }
+  //   return () => {
+  //     clearInterval(pingInterval);
+  //   };
+  // }, [ws]);
 
   useEffect(() => {
     // Scroll to the bottom when messages change
@@ -45,14 +92,29 @@ function App() {
     }
   }, [messages]);
 
-  // Send message via WebSocket
   const sendMessage = () => {
     if (messageInput.trim()) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: messageInput, isUser: true },
-      ]);
-      ws.send(messageInput); // Send message to WebSocket server
+      const messageData = {
+        type: "user_message",
+        content: messageInput,
+        timestamp: new Date().toISOString(),
+      };
+
+      setMessages((prevMessages) => {
+        const updatedMessages = [
+          ...prevMessages,
+          { text: messageInput, isUser: true },
+        ];
+        localStorage.setItem("messages", JSON.stringify(updatedMessages));
+        return updatedMessages;
+      });
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(messageData)); // Send JSON message to WebSocket server
+      } else {
+        console.error("WebSocket is not connected");
+      }
+
       setMessageInput(""); // Clear input field
     }
   };
@@ -67,13 +129,13 @@ function App() {
 
   return (
     <div className="max-w-md mx-auto h-screen flex flex-col justify-center p-2">
-      {/* <!-- Chat Container --> */}
+      {/* Chat Container */}
       <div className="bg-white rounded-lg shadow-md p-4 h-full flex flex-col justify-between">
-        {/* <!-- Chat Header --> */}
+        {/* Chat Header */}
         <div className="flex items-center mb-4">
           <div className="ml-3">
             <p className="text-xl font-medium">April</p>
-            {ws ? (
+            {ws && ws.readyState === WebSocket.OPEN ? (
               <p className="text-green-500">Online</p>
             ) : (
               <p className="text-gray-500">Offline</p>
@@ -81,8 +143,8 @@ function App() {
           </div>
         </div>
         <hr className="py-1" />
-        {/* <!-- Chat Messages --> */}
-        <div className=" flex-grow overflow-y-auto flex flex-col p-1 justify-end">
+        {/* Chat Messages */}
+        <div className="flex-grow overflow-y-auto flex flex-col p-1 justify-end">
           <div
             ref={containerRef}
             className="space-y-4 p-2 rounded-lg overflow-y-auto"
