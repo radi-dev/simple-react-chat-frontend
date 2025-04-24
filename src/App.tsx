@@ -210,7 +210,7 @@ const Chat = () => {
     );
 };
 
-const RecentChats = ({ isDesktop = false, setChatData }: { isDesktop?: boolean; setChatData: (data: string) => void }) => {
+const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop?: boolean; setChatData: (data: string) => void }) => {
 
     const [chats, setChats] = useState([]);
     const [page, setPage] = useState(0);
@@ -231,20 +231,23 @@ const RecentChats = ({ isDesktop = false, setChatData }: { isDesktop?: boolean; 
     }, []);
 
     const fetchChats = async () => {
-        const cachedChats = localStorage.getItem(`chats-page-${page}`);
-        if (cachedChats) {
-            setChats(JSON.parse(cachedChats));
-        }
+        // const cachedChats = localStorage.getItem(`chats-page-${page}`);
+        // if (cachedChats) {
+        //     setChats(JSON.parse(cachedChats));
+        // }
 
+        try {
             const res = await axios.get(
                 `${API_URL}/chats/recent?skip=${page * 10}&limit=10`
             );
             setChats((prevChats) => {
                 const newChats = [...prevChats, ...res.data];
-                localStorage.setItem(`chats-page-${page}`, JSON.stringify(newChats));
+                // localStorage.setItem(`chats-page-${page}`, JSON.stringify(newChats));
                 return newChats;
             });
-
+        } catch (error) {
+            console.error("Failed to fetch chats:", error);
+        }
     };
 
     return (
@@ -289,13 +292,24 @@ const RecentChats = ({ isDesktop = false, setChatData }: { isDesktop?: boolean; 
 
 const ChatView = ({ phone_no = "" }) => {
     const { phone } = phone_no ? { phone: phone_no } : useParams();
-    const [messages, setMessages] = useState([]);
+    interface Message {
+        id?: string;
+        content: string;
+        sender_role?: string;
+        isUser?: boolean;
+    }
+
+    const [messages, setMessages] = useState<Message[]>([]);
     const [page, setPage] = useState(0);
     console.log('phone dd:>> ', phone);
 
     useEffect(() => {
         fetchMessages();
-    }, [page, phone]);
+    }, [page, phone_no]);
+
+    useEffect(() => {
+        setMessages([]);
+    }, [phone_no]);
 
     useEffect(() => {
         const socket = new WebSocket(SOCKET_URL_ADMIN);
@@ -309,10 +323,10 @@ const ChatView = ({ phone_no = "" }) => {
     }, [phone]);
 
     const fetchMessages = async () => {
-        const cachedMessages = localStorage.getItem(`messages-${phone}-${page}`);
-        if (cachedMessages) {
-            setMessages(JSON.parse(cachedMessages));
-        } else {
+        // const cachedMessages = localStorage.getItem(`messages-${phone}-${page}`);
+        // if (cachedMessages) {
+        //     setMessages(JSON.parse(cachedMessages));
+        // }
             const res = await axios.get(
                 `${API_URL}/chats/chat/${phone}?skip=${page * 20}&limit=20`
             );
@@ -321,7 +335,7 @@ const ChatView = ({ phone_no = "" }) => {
                 localStorage.setItem(`messages-${phone}-${page}`, JSON.stringify(newMessages));
                 return newMessages;
             });
-        }
+
     };
 
     return (
