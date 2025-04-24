@@ -234,7 +234,8 @@ const RecentChats = ({ isDesktop = false, setChatData }: { isDesktop?: boolean; 
         const cachedChats = localStorage.getItem(`chats-page-${page}`);
         if (cachedChats) {
             setChats(JSON.parse(cachedChats));
-        } else {
+        }
+
             const res = await axios.get(
                 `${API_URL}/chats/recent?skip=${page * 10}&limit=10`
             );
@@ -243,7 +244,7 @@ const RecentChats = ({ isDesktop = false, setChatData }: { isDesktop?: boolean; 
                 localStorage.setItem(`chats-page-${page}`, JSON.stringify(newChats));
                 return newChats;
             });
-        }
+
     };
 
     return (
