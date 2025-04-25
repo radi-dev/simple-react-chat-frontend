@@ -255,7 +255,7 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
             <h1 className="text-xl font-bold mb-4">Recent Chats</h1>
             <ul>
                 {chats.map((chat) => (
-                    <li key={chat.customer_phone} className="mb-3 p-2 border rounded-2xl h-20 overflow-clip shadow-lg hover:shadow-xl hover:bg-gray-100 hover:scale-95 duration-700">
+                    <li key={chat.customer_phone} className="mb-3 p-2 border rounded-2xl h-20 overflow-y-scroll shadow-lg hover:shadow-xl hover:bg-gray-100 hover:scale-95 duration-700">
                         {isDesktop ? <div
                             // to={`/chats/${chat.customer_phone}`}
                             onClick={() => setChatData(chat.customer_phone)}
