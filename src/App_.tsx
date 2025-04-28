@@ -313,7 +313,13 @@ const ChatView = () => {
           >
             <p>{msg.content}</p>
             <span className="text-xs text-gray-500">
-              {new Date(msg.created_at).toLocaleString()}
+              {new Date(msg.created_at).toLocaleString([], {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </span>
           </div>
         ))}

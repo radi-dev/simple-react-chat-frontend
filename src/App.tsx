@@ -262,7 +262,13 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
 
                             className="block hover:cursor-pointer"
                         >
-                            <strong>{chat.customer_phone}</strong><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString("en-UK")}</small>
+                            <strong>{chat.customer_phone}</strong><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })}</small>
                             <p className="text-gray-500 text-sm">
                                 {chat.messages.at(-1)?.content}
                             </p>
@@ -270,7 +276,13 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
                             to={`/chats/${chat.customer_phone}`}
                             className="block hover:underline"
                         >
-                                <strong>{chat.customer_phone}</strong><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString("en-UK")}</small>
+                                <strong>{chat.customer_phone}</strong><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}</small>
                             <p className="text-gray-500 text-sm">
                                 {chat.messages.at(-1)?.content}
                             </p>
@@ -347,9 +359,21 @@ const ChatView = ({ phone_no = "" }) => {
             <div className="space-y-2">
                 {messages.map((msg) =>
                     msg.sender_role === "user" ? (
-                        <HumanMessage key={msg.id} text={msg.content} time={new Date(msg.created_at)?.toLocaleString("en-UK")} />
+                        <HumanMessage key={msg.id} text={msg.content} time={new Date(msg.created_at)?.toLocaleString([], {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        })} />
                     ) : (
-                            <BotMessage key={msg.id} text={msg.content} time={new Date(msg.created_at)?.toLocaleString("en-UK")} />
+                            <BotMessage key={msg.id} text={msg.content} time={new Date(msg.created_at)?.toLocaleString([], {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })} />
                     )
                 )}
             </div>
