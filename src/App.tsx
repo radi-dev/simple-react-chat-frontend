@@ -238,7 +238,7 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
 
         try {
             const res = await axios.get(
-                `${API_URL}/chats/recent?skip=${page * 10}&limit=10`
+                `${API_URL}/chats/recent?skip=${page * chats.length}&limit=10`
             );
             setChats((prevChats) => {
                 const newChats = [...prevChats, ...res.data];
@@ -328,7 +328,7 @@ const ChatView = ({ phone_no = "" }) => {
         //     setMessages(JSON.parse(cachedMessages));
         // }
             const res = await axios.get(
-                `${API_URL}/chats/chat/${phone}?skip=${page * 20}&limit=20`
+                `${API_URL}/chats/chat/${phone}?skip=${page * messages.length}&limit=20`
             );
             setMessages((prevMessages) => {
                 const newMessages = [...prevMessages, ...res.data];
