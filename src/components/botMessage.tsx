@@ -1,7 +1,7 @@
 import React from "react";
 import { convertWhatsAppTextToHtml } from "../utils/convertText";
 
-function BotMessage({ text = "" }) {
+function BotMessage({ text = "", time = "" }) {
   const htmlString = convertWhatsAppTextToHtml(text);
 
   return (
@@ -49,7 +49,7 @@ function BotMessage({ text = "" }) {
           className="text-sm text-gray-800"
           dangerouslySetInnerHTML={{ __html: htmlString }}
           style={{ whiteSpace: "pre-wrap" }}
-        />
+        /><sub className="text-gray-200 text-sm">{time}</sub>
       </div>
     </div>
   );

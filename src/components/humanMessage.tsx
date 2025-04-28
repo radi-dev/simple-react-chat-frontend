@@ -1,7 +1,7 @@
 import React from "react";
 import { convertWhatsAppTextToHtml } from "../utils/convertText";
 
-function HumanMessage({ text = "" }) {
+function HumanMessage({ text = "", time = "" }) {
   const htmlString = convertWhatsAppTextToHtml(text);
 
   return (
@@ -11,7 +11,7 @@ function HumanMessage({ text = "" }) {
           className="text-sm text-white"
           dangerouslySetInnerHTML={{ __html: htmlString }}
           style={{ whiteSpace: "pre-wrap" }}
-        />
+        /><sub className="text-gray-200 text-sm">{time}</sub>
       </div>
       <img
         src="https://pbs.twimg.com/profile_images/1707101905111990272/Z66vixO-_normal.jpg"

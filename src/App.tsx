@@ -262,7 +262,7 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
 
                             className="block hover:cursor-pointer"
                         >
-                            <strong>{chat.customer_phone}</strong>
+                            <strong>{chat.customer_phone}</strong><sub className="text-gray-200 text-sm">{chat.created_at}</sub>
                             <p className="text-gray-500 text-sm">
                                 {chat.messages.at(-1)?.content}
                             </p>
@@ -270,7 +270,7 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
                             to={`/chats/${chat.customer_phone}`}
                             className="block hover:underline"
                         >
-                            <strong>{chat.customer_phone}</strong>
+                                <strong>{chat.customer_phone}</strong><sub className="text-gray-200 text-sm">{chat.created_at}</sub>
                             <p className="text-gray-500 text-sm">
                                 {chat.messages.at(-1)?.content}
                             </p>
@@ -297,6 +297,9 @@ const ChatView = ({ phone_no = "" }) => {
         content: string;
         sender_role?: string;
         isUser?: boolean;
+        created_at?: string;
+        customer_phone?: string;
+        // sender_name?: string;
     }
 
     const [messages, setMessages] = useState<Message[]>([]);
@@ -344,9 +347,9 @@ const ChatView = ({ phone_no = "" }) => {
             <div className="space-y-2">
                 {messages.map((msg) =>
                     msg.sender_role === "user" ? (
-                        <HumanMessage key={msg.id} text={msg.content} />
+                        <HumanMessage key={msg.id} text={msg.content} time={msg.created_at} />
                     ) : (
-                        <BotMessage key={msg.id} text={msg.content} />
+                            <BotMessage key={msg.id} text={msg.content} time={msg.created_at} />
                     )
                 )}
             </div>
