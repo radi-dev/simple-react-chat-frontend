@@ -49,7 +49,7 @@ function BotMessage({ text = "", time = "" }) {
           className="text-sm text-gray-800"
           dangerouslySetInnerHTML={{ __html: htmlString }}
           style={{ whiteSpace: "pre-wrap" }}
-        /><sub className="text-gray-200 text-sm">{time}</sub>
+        /><small className="text-gray-300 text-sm">{time}</small>
       </div>
     </div>
   );

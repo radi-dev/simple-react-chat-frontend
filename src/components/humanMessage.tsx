@@ -11,7 +11,7 @@ function HumanMessage({ text = "", time = "" }) {
           className="text-sm text-white"
           dangerouslySetInnerHTML={{ __html: htmlString }}
           style={{ whiteSpace: "pre-wrap" }}
-        /><sub className="text-gray-200 text-sm">{time}</sub>
+        /><small className="text-gray-300 text-sm">{time}</small>
       </div>
       <img
         src="https://pbs.twimg.com/profile_images/1707101905111990272/Z66vixO-_normal.jpg"

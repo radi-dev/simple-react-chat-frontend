@@ -262,7 +262,7 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
 
                             className="block hover:cursor-pointer"
                         >
-                            <strong>{chat.customer_phone}</strong><sub className="text-gray-200 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString("en-UK")}</sub>
+                            <strong>{chat.customer_phone}</strong><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString("en-UK")}</small>
                             <p className="text-gray-500 text-sm">
                                 {chat.messages.at(-1)?.content}
                             </p>
@@ -270,7 +270,7 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
                             to={`/chats/${chat.customer_phone}`}
                             className="block hover:underline"
                         >
-                                <strong>{chat.customer_phone}</strong><sub className="text-gray-200 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString("en-UK")}</sub>
+                                <strong>{chat.customer_phone}</strong><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString("en-UK")}</small>
                             <p className="text-gray-500 text-sm">
                                 {chat.messages.at(-1)?.content}
                             </p>
