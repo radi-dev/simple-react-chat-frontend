@@ -262,7 +262,7 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
 
                             className="block hover:cursor-pointer"
                         >
-                            <strong>{chat.customer_phone}</strong><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
+                            <strong>{chat.customer_name || chat.customer_email || chat.customer_phone}</strong><p><small>{chat.customer_phone}</small></p><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
                                 day: "2-digit",
                                 month: "2-digit",
                                 year: "2-digit",
@@ -276,7 +276,7 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
                             to={`/chats/${chat.customer_phone}`}
                             className="block hover:underline"
                         >
-                                <strong>{chat.customer_phone}</strong><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
+                                <strong>{chat.customer_name || chat.customer_email || chat.customer_phone}</strong><p><small>{chat.customer_phone}</small></p><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
                                     day: "2-digit",
                                     month: "2-digit",
                                     year: "2-digit",
@@ -314,7 +314,16 @@ const ChatView = ({ phone_no = "" }) => {
         // sender_name?: string;
     }
 
-    const [messages, setMessages] = useState<Message[]>([]);
+    interface ChatMesages {
+        customer_name?: string;
+        customer_email?: string;
+        customer_phone?: string;
+        messages: Message[];
+    }
+
+    const [messages, setMessages] = useState<ChatMesages>({
+        messages: [],
+    });
     const [page, setPage] = useState(0);
     console.log('phone dd:>> ', phone);
 
@@ -323,7 +332,9 @@ const ChatView = ({ phone_no = "" }) => {
     }, [page, phone_no]);
 
     useEffect(() => {
-        setMessages([]);
+        setMessages({
+            messages: [],
+        });
     }, [phone_no]);
 
     useEffect(() => {
@@ -343,21 +354,28 @@ const ChatView = ({ phone_no = "" }) => {
         //     setMessages(JSON.parse(cachedMessages));
         // }
             const res = await axios.get(
-                `${API_URL}/chats/chat/${phone}?skip=${messages.length}&limit=20`
+                `${API_URL}/chats/chat/${phone}?skip=${messages.messages.length}&limit=20`
             );
-            setMessages((prevMessages) => {
-                const newMessages = [...prevMessages, ...res.data];
-                localStorage.setItem(`messages-${phone}-${page}`, JSON.stringify(newMessages));
-                return newMessages;
+        setMessages((existingMessages) => {
+            const prevMessages = existingMessages.messages;
+            const newMessages = [...prevMessages, ...res.data.messages];
+            const newMessage: ChatMesages = {
+                messages: newMessages,
+                customer_name: res.data.customer_name,
+                customer_email: res.data.customer_email,
+                customer_phone: res.data.customer_phone,
+            }
+            localStorage.setItem(`messages-${phone}-${page}`, JSON.stringify(newMessage));
+            return newMessage;
             });
 
     };
 
     return (
         <div className="p-4 max-w-lg w-full mx-auto h-screen overflow-auto bg-teal-100">
-            <h1 className="text-xl font-bold mb-4">Chat with {phone}</h1>
+            <h1 className="text-xl font-bold">Chat with {messages.customer_name || messages.customer_email || messages.customer_phone}</h1><small className="text-xs text-gray-500 mb-4">{messages.customer_phone}</small>
             <div className="space-y-2">
-                {messages.map((msg) =>
+                {messages.messages.map((msg) =>
                     msg.sender_role === "user" ? (
                         <HumanMessage key={msg.id} text={msg.content} time={new Date(msg.created_at)?.toLocaleString([], {
                             day: "2-digit",
