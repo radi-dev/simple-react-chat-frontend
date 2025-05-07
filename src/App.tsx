@@ -262,13 +262,13 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
 
                             className="block hover:cursor-pointer"
                         >
-                            <strong>{chat.customer_name || chat.customer_email || chat.customer_phone}</strong><p><small>{chat.customer_phone}</small></p><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
+                            <strong>{chat.customer_name || chat.customer_email || chat.customer_phone}</strong><p><small>{chat.customer_phone}</small><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
                                 day: "2-digit",
                                 month: "2-digit",
                                 year: "2-digit",
                                 hour: "2-digit",
                                 minute: "2-digit",
-                            })}</small>
+                            })}</small></p>
                             <p className="text-gray-500 text-sm">
                                 {chat.messages.at(-1)?.content}
                             </p>
@@ -276,13 +276,13 @@ const RecentChats = ({ isDesktop = false, setChatData = () => { } }: { isDesktop
                             to={`/chats/${chat.customer_phone}`}
                             className="block hover:underline"
                         >
-                                <strong>{chat.customer_name || chat.customer_email || chat.customer_phone}</strong><p><small>{chat.customer_phone}</small></p><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
+                                <strong>{chat.customer_name || chat.customer_email || chat.customer_phone}</strong><p><small>{chat.customer_phone}</small><small className="text-gray-300 text-sm">{new Date(chat.messages.at(-1)?.created_at)?.toLocaleString([], {
                                     day: "2-digit",
                                     month: "2-digit",
                                     year: "2-digit",
                                     hour: "2-digit",
                                     minute: "2-digit",
-                                })}</small>
+                                })}</small></p>
                             <p className="text-gray-500 text-sm">
                                 {chat.messages.at(-1)?.content}
                             </p>
