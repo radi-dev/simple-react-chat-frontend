@@ -358,7 +358,7 @@ const ChatView = ({ phone_no = "" }) => {
             );
         setMessages((existingMessages) => {
             const prevMessages = existingMessages.messages;
-            const newMessages = [...prevMessages, ...res.data.messages];
+            const newMessages = [...res.data.messages, ...prevMessages];
             const newMessage: ChatMesages = {
                 messages: newMessages,
                 customer_name: res.data.customer_name,
